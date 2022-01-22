@@ -1,30 +1,15 @@
 <template>
   <Card>
-    <div class="back"><Button type="primary" @click="onBack">返回</Button></div>
+    <div class="back"><Button type="primary" @click="onBack" >返回</Button></div>
     <div class="my-chart">
       <Row :gutter="20">
-        <Col :span="8"
-          ><div
+        <Col :span="8" v-for="item in chartList" :key="item.id">
+          <div
             class="grid-content bg-purple"
-            ref="main"
-            id="main"
+            ref="chartRef"
             :style="{ height: '350px' }"
-          ></div
-        ></Col>
-        <Col :span="8"
-          ><div
-            class="grid-content bg-purple"
-            id="main1"
-            :style="{ height: '350px' }"
-          ></div
-        ></Col>
-        <Col :span="8"
-          ><div
-            class="grid-content bg-purple"
-            id="main2"
-            :style="{ height: '350px' }"
-          ></div
-        ></Col>
+          ></div>
+        </Col>
       </Row>
     </div>
   </Card>
@@ -42,250 +27,201 @@ export default {
   components: { Card, Button, Row, Col },
   data() {
     return {
-      labList: [],
+      mychar: [],
+      chartList: [
+        {
+          id: "1",
+          text: "192.168.2.85: Processes",
+          xAxis: ["12:00", "12:05", "12:10", "12:15", "12:20", "12:25", "12:30"],
+          color:["#358b2d","#4084ae","#f7491e","#fc7fad","#7d6ce0","#80FFA5", "#00DDFF",],
+          data: [
+            {
+              name: "Number of processes",
+              ydata: [140, 232, 101, 264, 90, 340, 250],
+            },
+            {
+              name: "Number of runing processes",
+              ydata: [320, 132, 201, 334, 190, 130, 220],
+            },
+          ],
+        },
+        {
+          id: "2",
+          text: "Gradient Stacked Area Chart",
+          xAxis: ["12:00", "12:05", "12:10", "12:15", "12:20", "12:25", "12:30"],
+          color:["#fc7fad","#7d6ce0","#80FFA5", "#00DDFF","#358b2d","#4084ae","#f7491e"],
+          data: [
+            {
+              name: "Number of processes",
+              ydata: [140, 232, 101, 264, 90, 340, 250],
+            },
+            {
+              name: "Number of runing processes",
+              ydata: [320, 132, 201, 334, 190, 130, 220],
+            },
+          ],
+        },
+        {
+          id: "3",
+          text: "Gradient Stacked Area Chart",
+          xAxis: ["12:00", "12:05", "12:10", "12:15", "12:20", "12:25", "12:30"],
+          color:["#4084ae","#f7491e","#00DDFF","#80FFA5", "#358b2d","#fc7fad","#7d6ce0"],
+          data: [
+            {
+              name: "Number of processes",
+              ydata: [140, 232, 101, 264, 90, 340, 250],
+            },
+            {
+              name: "Number of runing processes",
+              ydata: [320, 132, 201, 334, 190, 130, 220],
+            },
+          ],
+        },
+      ],
     };
   },
+  beforeUpdate() {
+    this.chartRef = [];
+  },
+  updated() {
+    console.log("我的", this.itemRefs, "成都市");
+  },
   methods: {
+
     //返回
     onBack() {
       this.$router.go(-1);
     },
+    setOption(){
+      this.chartList.map((item, index) => {
+      let legendData = []
+      let myseries = item.data.map((series,seriesIndex)=>{
+            legendData.push(series.name)
+            series.type = "line",
+            series.stack = "Total",
+            series.smooth = true,
+            series.lineStyle = {
+              width: 0,
+            },
+            series.showSymbol = false,
+            series.areaStyle = {
+              opacity: 0.8,
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  // color: "rgb(128, 255, 165)",
+                  color:item.color[seriesIndex]
+                },
+                {
+                  offset: 1,
+                  // color: "rgb(1, 191, 236)",
+                  color:item.color[seriesIndex]
+                },
+              ]),
+            },
+            series.emphasis = {
+              focus: "series",
+            },
+            series.data = [...series.ydata],
+            series.markPoint = {
+              symbol: "pin", //标记(气泡)的图形
+              symbolSize: 40, //标记(气泡)的大小
+              itemStyle: {
+                color: item.color[seriesIndex], //图形的颜色。
+                borderColor: "#000", //图形的描边颜色。支持的颜色格式同 color，不支持回调函数。
+                borderWidth: 0, //描边线宽。为 0 时无描边。
+                borderType: "solid", //柱条的描边类型，默认为实线，支持 ‘solid’, ‘dashed’, ‘dotted’。
+              },
+              data: [
+                { type: "max", name: "最大值" },
+                { type: "min", name: "最小值" },
+              ],
+            },
+            series.markLine = {
+              data: [{ type: "average", name: "平均值" }],
+            }
+            return series
+          })
+      
+  
+      this.$nextTick(() => {
+        if (!this.mychar[index].setOption) return
+
+          this.mychar[index].setOption({
+            color: [...item.color],
+            title: {
+              text: item.text,
+              left: "center",
+              textStyle: {
+                color: '#333333',
+                fontWeight: 'bold',
+                fontSize: 15
+              }
+            },
+            tooltip: {
+              trigger: "axis",
+              axisPointer: {
+                type: "cross",
+                label: {
+                  backgroundColor: "#f40",
+                },
+              },
+            },
+            legend: {
+              data: [
+                ...legendData
+              ],
+              x: "left",
+              y: "bottom",
+              orient: "vertical",
+              icon: "bar",
+            },
+            toolbox: {
+              feature: {
+                saveAsImage: {},
+              },
+            },
+            grid: {
+              left: "3%",
+              right: "4%",
+              // bottom: "10%",
+              containLabel: true,
+            },
+            xAxis: [
+              {
+                type: "category",
+                boundaryGap: false,
+                data: [...item.xAxis],
+              },
+            ],
+            yAxis: [
+              {
+                type: "value",
+              },
+            ],
+            series:[...myseries],
+          });
+          
+        });
+      });
+    },
     initChart() {
-      this.char = echarts.init(document.getElementById("main"));
-      this.char.setOption({
-        color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
-        title: {
-          text: "Gradient Stacked Area Chart",
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            label: {
-              backgroundColor: "#6a7985",
-            },
-          },
-        },
-        legend: {
-          data: ["Line 3"],
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {},
-          },
-        },
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true,
-        },
-        xAxis: [
-          {
-            type: "category",
-            boundaryGap: false,
-            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-          },
-        ],
-        series: [
-          {
-            name: "Line 3",
-            type: "line",
-            stack: "Total",
-            smooth: true,
-            lineStyle: {
-              width: 0,
-            },
-            showSymbol: false,
-            areaStyle: {
-              opacity: 0.8,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: "rgb(55, 162, 255)",
-                },
-                {
-                  offset: 1,
-                  color: "rgb(116, 21, 219)",
-                },
-              ]),
-            },
-            emphasis: {
-              focus: "series",
-            },
-            data: [320, 132, 201, 334, 190, 130, 220],
-          },
-        ],
+      this.chartList.map((item, index) => {
+        this.mychar[index] = echarts.init(this.$refs.chartRef[index]);
+        this.setOption()
       });
-
-       this.char1 = echarts.init(document.getElementById("main1"));
-      this.char1.setOption({
-        color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
-        title: {
-          text: "Gradient Stacked Area Chart",
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            label: {
-              backgroundColor: "#6a7985",
-            },
-          },
-        },
-        legend: {
-          data: ["Line 3"],
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {},
-          },
-        },
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true,
-        },
-        xAxis: [
-          {
-            type: "category",
-            boundaryGap: false,
-            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-          },
-        ],
-        series: [
-          {
-            name: "Line 3",
-            type: "line",
-            stack: "Total",
-            smooth: true,
-            lineStyle: {
-              width: 0,
-            },
-            showSymbol: false,
-            areaStyle: {
-              opacity: 0.8,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: "rgb(55, 162, 255)",
-                },
-                {
-                  offset: 1,
-                  color: "rgb(116, 21, 219)",
-                },
-              ]),
-            },
-            emphasis: {
-              focus: "series",
-            },
-            data: [320, 132, 201, 334, 190, 130, 220],
-          },
-        ],
-      });
-
- this.char2 = echarts.init(document.getElementById("main2"));
-      this.char2.setOption({
-        color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
-        title: {
-          text: "Gradient Stacked Area Chart",
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            label: {
-              backgroundColor: "#6a7985",
-            },
-          },
-        },
-        legend: {
-          data: ["Line 3"],
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {},
-          },
-        },
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true,
-        },
-        xAxis: [
-          {
-            type: "category",
-            boundaryGap: false,
-            data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-          },
-        ],
-        series: [
-          {
-            name: "Line 3",
-            type: "line",
-            stack: "Total",
-            smooth: true,
-            lineStyle: {
-              width: 0,
-            },
-            showSymbol: false,
-            areaStyle: {
-              opacity: 0.8,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: "rgb(55, 162, 255)",
-                },
-                {
-                  offset: 1,
-                  color: "rgb(116, 21, 219)",
-                },
-              ]),
-            },
-            emphasis: {
-              focus: "series",
-            },
-            data: [320, 132, 201, 334, 190, 130, 220],
-          },
-        ],
-      });
-
-      // this.$axios.get("请求的接口").then((res) => {
-      //   console.log("访问后台");
-      //   this.labList = res.data.data.labList;
-      //   console.log(this.labList);
-      //   this.char.setOption({
-      //     series: [
-      //       {
-      //         name: "访问来源",
-      //         type: "pie",
-      //         radius: "55%",
-      //         data: this.labList,
-      //       },
-      //     ],
-      //   });
-      // });
     },
   },
   mounted() {
-    this.initChart();
+    this.$nextTick(() => {
+      this.initChart();
+    });
+
+    window.onresize = () => {
+      this.chartList.forEach((item,index)=>{
+        this.mychar[index].resize()
+      })
+    }
   },
 };
 </script>
@@ -295,5 +231,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   margin-right: 8rem;
+
+  padding: 15px 0;
 }
 </style>

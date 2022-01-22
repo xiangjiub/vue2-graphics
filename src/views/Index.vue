@@ -14,11 +14,17 @@
     </Form>
 
     <Table :data="tableData" style="width: 100%">
-      <TableColumn prop="name" label="名称" width="180"> </TableColumn>
-      <TableColumn prop="ipAddress" label="接口" width="180"> </TableColumn>
-      <TableColumn prop="isAvailable" label="可用性"> </TableColumn>
+      <TableColumn prop="name" label="名称" > </TableColumn>
+      <TableColumn prop="ipAddress" label="接口"> </TableColumn>
+      <TableColumn prop="isAvailable" label="可用性"> 
+        <template slot-scope="scope">
+          <Tag
+            :type="scope.row.isAvailable == 'true' ? 'primary' : 'success'"
+            disable-transitions>{{scope.row.isAvailable == true ? '可用' : '不可用'}}
+          </Tag>
+        </template>
+      </TableColumn>
       <TableColumn prop="status" label="状态"> </TableColumn>
-      <TableColumn prop="graphics" label="图形"> </TableColumn>
       <TableColumn fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <Button @click="handleClickItem(scope.row)" type="text" size="small">查看明细</Button>
@@ -36,7 +42,7 @@ import {
   FormItem,
   Input,
   Table,
-  TableColumn,
+  TableColumn,Tag,
 } from "element-ui";
 export default {
   name: "Index",
@@ -47,7 +53,7 @@ export default {
     FormItem,
     Input,
     Table,
-    TableColumn,
+    TableColumn,Tag
   },
   data() {
     return {
@@ -62,7 +68,7 @@ export default {
           id: "1",
           name: "192.168.20.18-中央厨房数据库",
           ipAddress: "192.168.20.18:11050",
-          isAvailable: "",
+          isAvailable: "true",
           status: "已启用",
           graphics: "图形 30",
         },
@@ -70,7 +76,7 @@ export default {
           id: "2",
           name: "192.168.20.19-两微一端数据库",
           ipAddress: "192.168.20.19:11050",
-          isAvailable: "",
+          isAvailable: "false",
           status: "已启用",
           graphics: "图形 29",
         },
@@ -78,7 +84,7 @@ export default {
           id: "3",
           name: "Leibo-192.168.1.5-两微一端数据库",
           ipAddress: "192.168.1.5:11050",
-          isAvailable: "",
+          isAvailable: "false",
           status: "已启用",
           graphics: "图形 28",
         },
@@ -86,7 +92,7 @@ export default {
           id: "4",
           name: "Leibo-192.168.1.6-中央厨房数据库",
           ipAddress: "192.168.1.6:11050",
-          isAvailable: "",
+          isAvailable: "true",
           status: "已启用",
           graphics: "图形 32",
         },
@@ -94,7 +100,7 @@ export default {
           id: "5",
           name: "Renshou-192.168.2.171-教育缴费数据库",
           ipAddress: "192.168.2.171:11050",
-          isAvailable: "",
+          isAvailable: "false",
           status: "已启用",
           graphics: "图形 27",
         },
@@ -102,7 +108,7 @@ export default {
           id: "6",
           name: "Renshou-192.168.2.173-新闻+数据库",
           ipAddress: "192.168.2.173:11050",
-          isAvailable: "",
+          isAvailable: "true",
           status: "已启用",
           graphics: "图形 27",
         },
@@ -110,7 +116,7 @@ export default {
           id: "7",
           name: "Renshou-192.168.2.183-电商数据库",
           ipAddress: "192.168.2.183:11050",
-          isAvailable: "",
+          isAvailable: "false",
           status: "已启用",
           graphics: "图形 29",
         },
@@ -118,7 +124,7 @@ export default {
           id: "8",
           name: "Renshou-192.168.2.187-两微一端数据库",
           ipAddress: "192.168.2.187:11050",
-          isAvailable: "",
+          isAvailable: "true",
           status: "已启用",
           graphics: "图形 29",
         },
