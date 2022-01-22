@@ -16,12 +16,9 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { Card, Button, Row, Col } from "element-ui";
 
 import * as echarts from "echarts";
-Vue.prototype.$echarts = echarts;
-// require('echarts/theme/macarons') // echarts theme
 export default {
   name: "Graphics",
   components: { Card, Button, Row, Col },
@@ -79,12 +76,6 @@ export default {
         },
       ],
     };
-  },
-  beforeUpdate() {
-    this.chartRef = [];
-  },
-  updated() {
-    console.log("我的", this.itemRefs, "成都市");
   },
   methods: {
 
