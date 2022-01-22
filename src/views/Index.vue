@@ -20,7 +20,7 @@
         <template slot-scope="scope">
           <Tag
             :type="scope.row.isAvailable == 'true' ? 'primary' : 'success'"
-            disable-transitions>{{scope.row.isAvailable == true ? '可用' : '不可用'}}
+            disable-transitions>{{scope.row.isAvailable == 'true' ? '可用' : '不可用'}}
           </Tag>
         </template>
       </TableColumn>
